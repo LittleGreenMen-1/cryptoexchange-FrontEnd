@@ -1,4 +1,10 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
+import { toast, ToastContainer } from 'react-toastify'
+import { loadStripe } from "@stripe/stripe-js";
+import * as Yup from 'yup'
+import axios from 'axios'
+import constants from 'constants/constants'
+
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
@@ -9,14 +15,11 @@ import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
-import './DialogBox.css'
-import * as Yup from 'yup'
-import axios from 'axios'
-import { toast, ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
 import AddIcon from '@mui/icons-material/Add'
 import Fab from '@mui/material/Fab'
-import constants from 'constants/constants'
+
+import './DialogBox.css'
+import 'react-toastify/dist/ReactToastify.css'
 
 export default function DialogBox(props) {
   const [open, setOpen] = React.useState(false)
@@ -45,26 +48,18 @@ export default function DialogBox(props) {
   const handleConfirm = () => {
     if (valid === false) return toast.error('Wrong input')
 
-    if (props.title === 'Deposit Funds')
-      axios
-        .put(
-          'http://localhost:1234/funds',
-          {
-            amount: Number(amount),
-          },
-          { withCredentials: true }
-        )
-        .then(response => {
-          toast.success(response.data.message)
-          handleClose()
-          console.log(response)
-        })
-        .catch(error => {
-          toast.error(error.response.data.message)
-          handleClose()
-          console.log(error)
-        })
-    else {
+    if (props.title === 'Deposit Funds') {
+      const product = { // An object that contains the amount of funds to be deposited
+        name: 'Deposit',
+        price: 1,
+        productOwner: 'CryptoExchange',
+        description: 'Fund Deposit',
+        quantity: Number(amount),
+        currency: 'usd'
+      }
+
+      makePayment(product);
+    } else {
       axios
         .post(
           'http://localhost:1234/transaction',
@@ -73,21 +68,28 @@ export default function DialogBox(props) {
             baseCurrencyName,
             exchangeCurrencyName,
           },
-          { withCredentials: true }
-        )
-        .then(response => {
+          {
+            withCredentials: true
+          }
+        ).then(response => {
           toast.success(response.data.message)
           handleClose()
           console.log(response)
-        })
-        .catch(error => {
+        }).catch(error => {
           toast.error(error.response.data.message)
           handleClose()
           console.log(error)
-        })
-      axios.post(`${constants.baseURL}/currency-history`, {
-        name: baseCurrencyName,
-      }, { withCredentials: true })
+        });
+      
+      axios.post(
+        `${constants.baseURL}/currency-history`,
+        {
+          name: baseCurrencyName,
+        },
+        {
+          withCredentials: true
+        }
+      );
     }
   }
 
@@ -100,6 +102,38 @@ export default function DialogBox(props) {
     setAmount('')
     setReceivedAmount('')
   }
+
+  // A function that initialises the payment process and redirects the user to the Stripe checkout page
+  const makePayment = async(product) => {
+		const stripe = await loadStripe("pk_test_51NHPT7Lcq4zXuPHdPewii7JSX2UL9TgCp0dCTFQKUyG8rajsyNRr1QQDXW4uXbUQw18ga0w2VPI6AxyxxIDX6IT20029I7KH0Y");
+		const body = { product };
+		const headers = {
+			"Content-Type": "application/json",
+		};
+
+    const response = await axios.post(
+      `${constants.baseURL}/funds`,
+      {
+        headers: headers,
+        body: JSON.stringify(body),
+      },
+      {
+        withCredentials: true
+      }
+    );
+
+    const session = await response.data;
+	
+		const result = stripe.redirectToCheckout(
+      {
+			  sessionId: session.id,
+		  }
+    );
+
+		if (result.error) {
+			console.log(result.error);
+		}
+	};
 
   return (
     <div className="dialog">

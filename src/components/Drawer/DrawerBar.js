@@ -4,6 +4,7 @@ import Avatar from '@mui/material/Avatar';
 import image1 from '../../imgs/image1.png'
 import MovingIcon from '@mui/icons-material/Moving';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import { Box } from '@mui/system';
 import { Link } from 'react-router-dom';
@@ -114,6 +115,14 @@ export const DrawerBar = ({ notHome }) => {
                                 <AccountBoxIcon />
                             </ListItemIcon>
                             <ListItemText primary='Profile' />
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding component={Link} to='/forum' style={{ textDecoration: 'none', color: 'black' }}>
+                        <ListItemButton>
+                            <ListItemIcon>
+                                <QuestionAnswerIcon />
+                            </ListItemIcon>
+                            <ListItemText primary='Forum' />
                         </ListItemButton>
                     </ListItem>
                 </List>

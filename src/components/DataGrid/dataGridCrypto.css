@@ -1,0 +1,36 @@
+.bestRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-direction: row;
+
+    padding: 10px;
+    height: 30px;
+    width: 100%;
+}
+
+.bestCard {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+
+    background-color: #f5f5f5;
+    border-radius: 5px;
+
+    color: #1a1a1a;
+
+    padding-left: 10px;
+    padding-right: 10px;
+
+    width: 15%;
+}
+
+.bestCard:hover {
+    background-color: #1a1a1a;
+    color: #f5f5f5;
+}
+
+.bestCard p {
+    color: #53b800;
+}

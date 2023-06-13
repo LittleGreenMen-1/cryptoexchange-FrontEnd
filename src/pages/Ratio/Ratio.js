@@ -1,35 +1,39 @@
-import { Paper, Typography } from '@mui/material'
-import { Box } from '@mui/system'
-import { DrawerBar } from 'components/Drawer/DrawerBar'
-import React from 'react'
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts'
-import './ratio.css'
+import { Paper, Typography } from '@mui/material';
+import { Box } from '@mui/system';
+import { DrawerBar } from 'components/Drawer/DrawerBar';
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
+import React from 'react';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import axios from 'axios';
+import constants from 'constants/constants'
+import './ratio.css'
 
 export const Ratio = () => {
     const [currency, setCurrency] = React.useState('');
+    const [historyData, setHistoryData] = React.useState([]);
+    const [limits, setLimits] = React.useState([0, 0]); // [min, max] - limits of the graph's y-axis
 
     const handleChange = (event) => {
         setCurrency(event.target.value);
-    };
 
-    const data = [
-        { name: 'Jan', uv: 400 },
-        { name: 'Feb', uv: 100 },
-        { name: 'Mar', uv: 400 },
-        { name: 'Apr', uv: 100 },
-        { name: 'May', uv: 500 },
-        { name: 'Jun', uv: 400 },
-        { name: 'Jul', uv: 600 },
-        { name: 'Aug', uv: 400 },
-        { name: 'Sep', uv: 400 },
-        { name: 'Oct', uv: 1000 },
-        { name: 'Nov', uv: 400 },
-        { name: 'Dec', uv: 400 },
-    ];
+        // Get history data from last year
+        axios.get(
+            `${constants.baseURL}/ratio-history?id=${event.target.value}`,
+            {
+                withCredentials: true
+            }
+        ).then((res) => {
+            setHistoryData(res.data.data);
+            setLimits(
+                [res.data.min, res.data.max]
+            );
+        }).catch((err) => {
+            console.log(err);
+        });
+    };
 
     return (
         <>
@@ -64,16 +68,19 @@ export const Ratio = () => {
                                 label="Crypto"
                                 onChange={handleChange}
                             >
-                                <MenuItem value={'BTC'}>Bitcoin</MenuItem>
-                                <MenuItem value={'ETH'}>Ethereum</MenuItem>
+                                <MenuItem value={'1'}>Bitcoin</MenuItem>
+                                <MenuItem value={'1027'}>Ethereum</MenuItem>
+                                <MenuItem value={'825'}>Tether</MenuItem>
+                                <MenuItem value={'1839'}>Binance Coin</MenuItem>
+                                <MenuItem value={'52'}>XRP</MenuItem>
                             </Select>
                         </FormControl>
                     </Box>
-                    <LineChart width={1000} height={500} data={data} className='charts'>
+                    <LineChart width={1000} height={500} data={historyData} className='charts'>
                         <Line type="monotone" dataKey="uv" stroke="#8884d8" />
                         <CartesianGrid stroke="#ccc" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
+                        <XAxis dataKey="name" interval={30}/>
+                        <YAxis type="number" domain={limits}/>
                     </LineChart>
                 </Paper>
             </Box>
