@@ -109,7 +109,7 @@ export const DataGridCrypto = ({ columns, actionColumn, url }) => {
                                 bestCrypto.length > 0 && bestCrypto.map((crypto) => (
                                     <div className = "bestCard">
                                         <h3>{crypto.name}</h3>
-                                        <p>+{crypto.price}%</p>
+                                        <p>${crypto.price}</p>
                                     </div>
                                 ))
                             }

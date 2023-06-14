@@ -25,9 +25,10 @@ export default function DialogBox(props) {
   const [open, setOpen] = React.useState(false)
   const [amount, setAmount] = React.useState('')
   const [receivedAmount, setReceivedAmount] = React.useState('')
-  const [baseCurrencyName, setBaseCurrencyName] = React.useState('Bitcoin')
-  const [exchangeCurrencyName, setExchangeCurrencyName] = React.useState('Ethereum')
+  const [baseCurrencyName, setBaseCurrencyName] = React.useState('Choose Currency')
+  const [exchangeCurrencyName, setExchangeCurrencyName] = React.useState('Choose Currency')
   const [valid, setValid] = React.useState(false)
+  const [ratio, setRatio] = React.useState(0) // The ratio of the base currency to the exchange currency
 
   useEffect(() => {
     if (props.title === 'Sell') setExchangeCurrencyName('xUSD')
@@ -178,7 +179,7 @@ export default function DialogBox(props) {
                     value={amount}
                     onChange={event => {
                       setAmount(event.target.value)
-                      setReceivedAmount(event.target.value * Math.random() * 100)
+                      setReceivedAmount(event.target.value / ratio)
                     }}
                   />
                 </div>
@@ -194,6 +195,17 @@ export default function DialogBox(props) {
                       label="Currency"
                       onChange={event => {
                         setBaseCurrencyName(event.target.value)
+
+                        axios.get(
+                          `${constants.baseURL}/crypto/get?crypto=${event.target.value}`,
+                          {
+                            withCredentials: true,
+                          }
+                        ).then(response => {
+                          setRatio(response.data.ratio);
+                        }).catch(error => {
+                          console.log(error)
+                        });
                       }}
                     >
                       <MenuItem value={'xUSD'}>xUSD</MenuItem>
@@ -218,7 +230,7 @@ export default function DialogBox(props) {
                     value={receivedAmount}
                     onChange={event => {
                       setReceivedAmount(event.target.value)
-                      setAmount(event.target.value * Math.random() * 100)
+                      setAmount(event.target.value * ratio)
                     }}
                   />
                 </div>
@@ -232,7 +244,18 @@ export default function DialogBox(props) {
                       value={exchangeCurrencyName}
                       label="Currency"
                       onChange={event => {
-                        setExchangeCurrencyName(event.target.value)
+                        setExchangeCurrencyName(event.target.value);
+
+                        axios.get(
+                          `${constants.baseURL}/crypto/get?crypto=${event.target.value}`,
+                          {
+                            withCredentials: true,
+                          }
+                        ).then(response => {
+                          setRatio(response.data.ratio);
+                        }).catch(error => {
+                          console.log(error)
+                        });
                       }}
                     >
                       <MenuItem value={'xUSD'}>xUSD</MenuItem>
@@ -260,7 +283,7 @@ export default function DialogBox(props) {
                     value={amount}
                     onChange={event => {
                       setAmount(event.target.value)
-                      setReceivedAmount(event.target.value * Math.random() * 900)
+                      setReceivedAmount(event.target.value * ratio)
                     }}
                   />
                 </div>
@@ -274,7 +297,18 @@ export default function DialogBox(props) {
                       value={baseCurrencyName}
                       label="Currency"
                       onChange={event => {
-                        setBaseCurrencyName(event.target.value)
+                        setBaseCurrencyName(event.target.value);
+
+                        axios.get(
+                          `${constants.baseURL}/crypto/get?crypto=${event.target.value}`,
+                          {
+                            withCredentials: true,
+                          }
+                        ).then(response => {
+                          setRatio(response.data.ratio);
+                        }).catch(error => {
+                          console.log(error)
+                        });
                       }}
                     >
                       <MenuItem value={'Bitcoin'}>Bitcoin</MenuItem>
