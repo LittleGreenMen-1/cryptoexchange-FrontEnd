@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSearchParams } from "react-router-dom";
-import { toast, ToastContainer } from 'react-toastify'
+import { toast } from 'react-toastify'
 
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
@@ -44,8 +44,6 @@ const columnsSell = [
     },
 ];
 
-
-
 const actionColumnBuy = [
     {
         field: "action",
@@ -53,7 +51,7 @@ const actionColumnBuy = [
         width: 120,
         renderCell: (params) => {
             return (
-                <DialogBox title='Buy' />
+                <DialogBox title='Buy' name={params.row.name} ratio={params.row.ratio}/>
             );
         },
     },
@@ -66,7 +64,7 @@ const actionColumnSell = [
         width: 120,
         renderCell: (params) => {
             return (
-                <DialogBox title='Sell' />
+                <DialogBox title='Sell' name={params.row.name} ratio={params.row.ratio}/>
             );
         },
     },
@@ -97,19 +95,30 @@ const MainPage = () => {
     // If the status is 202, then the transaction was successful
     // If the status is 402, then the transaction failed
     //
-    if (searchParams.get('status') == '202') {
-        toast.success('Transaction successful!');
+    if (searchParams.get('status') === '202') {
+        toast.success('Transaction successful!', 
+            {
+                toastId: 'transaction-successful',
+            }
+        );
 
-        setSearchParams({ status: null });
+        setSearchParams({});
         getAvailableFunds();
-    } else if (searchParams.get('status') == '402') {
-        toast.error('Transaction failed!');
-
-        setSearchParams({ status: null });
     }
 
-    if (availableFunds == -1) { // If the available funds are not set, then we fetch them from the server
+    if (searchParams.get('status') === '402') {
+        toast.error('Transaction failed!', 
+            {
+                toastId: 'transaction-failed',
+            }
+        );
+
+        setSearchParams({});
         getAvailableFunds();
+    }
+
+    if (availableFunds === -1) { // If the available funds are not set, then we fetch them from the server
+        setInterval(getAvailableFunds, 1000);
     }
 
     const handleChange = (event, newValue) => {
@@ -118,6 +127,7 @@ const MainPage = () => {
 
     return (
         <>
+        {/* <ToastContainer /> */}
             <Box className='container' sx={{
                 marginTop: 10,
             }}>
@@ -151,7 +161,10 @@ const MainPage = () => {
                     >
                         <Tab value="one" label="Buy" onClick={ () => setBuy(true) } />
                         <Tab value="two" label="Sell" onClick={ () => setBuy(false) } />
-                        <p>Available funds: {availableFunds}$</p>
+                        {
+                            availableFunds !== -1 && 
+                            <p>Available funds: {availableFunds}$</p>
+                        }
                     </Tabs>
                     {buy ? <DataGridCrypto columns={columnsBuy} actionColumn={actionColumnBuy} url={'crypto'} /> : <DataGridCrypto columns={columnsSell} actionColumn={actionColumnSell} url={'crypto-sell'} />}
                     <DialogBox title='Deposit Funds' />

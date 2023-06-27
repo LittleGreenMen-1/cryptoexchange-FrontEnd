@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import { Button, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
-import image1 from '../../imgs/image1.png'
 import MovingIcon from '@mui/icons-material/Moving';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
@@ -136,7 +135,7 @@ export const DrawerBar = ({ notHome }) => {
                         gridArea: 'logout',
                         marginTop: 18,
                     }}
-                    href='/'
+                    href='http://localhost:1234/logout'
                 >
                     Log out
                 </Button>

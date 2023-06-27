@@ -34,6 +34,8 @@ export const DataGridCrypto = ({ columns, actionColumn, url }) => {
     const [bestCrypto, setBestCrypto] = useState([])
 
     const updaterRef = useRef(null);
+    const [currency, setCurrency] = useState('USD');
+    const [rate, setRate] = useState(0);
 
     useEffect(() => {
         axios.get(`${constants.baseURL}/${url}`, { withCredentials: true })
@@ -52,6 +54,19 @@ export const DataGridCrypto = ({ columns, actionColumn, url }) => {
             })
     }, [url]);
 
+    // Get the country's currency and its exchange rate
+    if (rate === 0) {
+        setRate(null);
+
+        axios.get(`${constants.baseURL}/currency`, { withCredentials: true })
+            .then((res) => {
+                setCurrency(res.data.currency);
+                setRate(res.data.exchangeRate);
+            }).catch((err) => {
+                console.log(err);
+            });
+    }
+
     // Update the 'BUY' table every second
     const Update = () => {
         clearInterval(updaterRef.current);
@@ -59,7 +74,10 @@ export const DataGridCrypto = ({ columns, actionColumn, url }) => {
         updaterRef.current = setInterval(() => {            
             axios.get(`${constants.baseURL}/${url}`, { withCredentials: true })
                  .then((res) => {
-                    setTableBuy(res.data.toBuy);
+                    if (url === "crypto")
+                        setTableBuy(res.data.toBuy);
+                    if (url === "crypto-sell")
+                        setTableSell(res.data.toSell);
                  }
             );
         }, 1000);
@@ -77,7 +95,7 @@ export const DataGridCrypto = ({ columns, actionColumn, url }) => {
 
     LoadBestCryptoData();
 
-    if (url === 'crypto') Update();
+    if (url === 'crypto' || url === "crypto-sell") Update();
     else clearInterval(updaterRef.current); // Stop updating the 'BUY' table if we switch to another page/tab
 
     return (
@@ -102,6 +120,17 @@ export const DataGridCrypto = ({ columns, actionColumn, url }) => {
 
             { url !== 'transaction-history' &&
                 <>
+                    <div className = "bestRow">
+                        {
+                            rate > 0 && rate !== null &&
+                            <>
+                                <h3>1 {currency} = {rate} USD</h3>
+                                <h3>1 USD = {1 / rate} {currency}</h3>
+                            </>
+                        }
+                    </div>
+
+                    <br/>
                     <div>
                         <h3>Top cryptocurrencies of the last 24h</h3>
                         <div className = "bestRow">

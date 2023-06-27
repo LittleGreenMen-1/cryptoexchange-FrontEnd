@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { toast, ToastContainer } from 'react-toastify'
+import React, { useEffect } from 'react'
+import { toast } from 'react-toastify'
 import { loadStripe } from "@stripe/stripe-js";
 import * as Yup from 'yup'
 import axios from 'axios'
@@ -25,10 +25,11 @@ export default function DialogBox(props) {
   const [open, setOpen] = React.useState(false)
   const [amount, setAmount] = React.useState('')
   const [receivedAmount, setReceivedAmount] = React.useState('')
-  const [baseCurrencyName, setBaseCurrencyName] = React.useState('Choose Currency')
-  const [exchangeCurrencyName, setExchangeCurrencyName] = React.useState('Choose Currency')
+  const [baseCurrencyName, setBaseCurrencyName] = React.useState(props.title === 'Buy' ? 'Choose Currency' : props.name)
+  const [exchangeCurrencyName, setExchangeCurrencyName] = React.useState(props.title === 'Sell' ? 'Choose Currency' : props.name)
   const [valid, setValid] = React.useState(false)
-  const [ratio, setRatio] = React.useState(0) // The ratio of the base currency to the exchange currency
+  const [ratioA, setRatioA] = React.useState(0) // The ratio of the currency to be sold to xUSD
+  const [ratioB, setRatioB] = React.useState(props.title === 'Buy' ? props.ratio : 0) // The ratio of the currency to be bought to xUSD
 
   useEffect(() => {
     if (props.title === 'Sell') setExchangeCurrencyName('xUSD')
@@ -52,10 +53,10 @@ export default function DialogBox(props) {
     if (props.title === 'Deposit Funds') {
       const product = { // An object that contains the amount of funds to be deposited
         name: 'Deposit',
-        price: 1,
+        price: Number(amount),
         productOwner: 'CryptoExchange',
         description: 'Fund Deposit',
-        quantity: Number(amount),
+        quantity: 1,
         currency: 'usd'
       }
 
@@ -75,7 +76,6 @@ export default function DialogBox(props) {
         ).then(response => {
           toast.success(response.data.message)
           handleClose()
-          console.log(response)
         }).catch(error => {
           toast.error(error.response.data.message)
           handleClose()
@@ -136,9 +136,23 @@ export default function DialogBox(props) {
 		}
 	};
 
+  if (props.title === 'Sell' && ratioA === 0) {
+    // Get the ratio of the currency to be sold to xUSD
+    axios.get(
+      `${constants.baseURL}/crypto/get?crypto=${props.name}`,
+      {
+        withCredentials: true,
+      }
+    ).then(response => {
+      setRatioA(response.data.ratio);
+    }).catch(error => {
+      console.log(error)
+    });
+  }
+
   return (
     <div className="dialog">
-      <ToastContainer />
+      {/* <ToastContainer /> */}
       {
         props.title === 'Deposit Funds' ? (
           <div className='fab'>
@@ -179,7 +193,7 @@ export default function DialogBox(props) {
                     value={amount}
                     onChange={event => {
                       setAmount(event.target.value)
-                      setReceivedAmount(event.target.value / ratio)
+                      setReceivedAmount(event.target.value * ratioA / ratioB)
                     }}
                   />
                 </div>
@@ -202,7 +216,7 @@ export default function DialogBox(props) {
                             withCredentials: true,
                           }
                         ).then(response => {
-                          setRatio(response.data.ratio);
+                          setRatioA(response.data.ratio);
                         }).catch(error => {
                           console.log(error)
                         });
@@ -230,7 +244,7 @@ export default function DialogBox(props) {
                     value={receivedAmount}
                     onChange={event => {
                       setReceivedAmount(event.target.value)
-                      setAmount(event.target.value * ratio)
+                      setAmount(event.target.value * ratioB / ratioA)
                     }}
                   />
                 </div>
@@ -252,7 +266,7 @@ export default function DialogBox(props) {
                             withCredentials: true,
                           }
                         ).then(response => {
-                          setRatio(response.data.ratio);
+                          setRatioB(response.data.ratio);
                         }).catch(error => {
                           console.log(error)
                         });
@@ -283,7 +297,7 @@ export default function DialogBox(props) {
                     value={amount}
                     onChange={event => {
                       setAmount(event.target.value)
-                      setReceivedAmount(event.target.value * ratio)
+                      setReceivedAmount(event.target.value * ratioA)
                     }}
                   />
                 </div>
@@ -305,7 +319,8 @@ export default function DialogBox(props) {
                             withCredentials: true,
                           }
                         ).then(response => {
-                          setRatio(response.data.ratio);
+                          setRatioA(response.data.ratio);
+                          setReceivedAmount(amount * response.data.ratio);
                         }).catch(error => {
                           console.log(error)
                         });

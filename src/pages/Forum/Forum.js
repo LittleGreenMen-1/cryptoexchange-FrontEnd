@@ -1,7 +1,7 @@
 import './forum.css'
 
 import React, { useState, useRef } from 'react'
-import { toast, ToastContainer } from 'react-toastify'
+import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 import Button from '@mui/material/Button'
@@ -64,6 +64,8 @@ export const Forum = () => {
 
             questionRef.current.value = '';
         });
+
+        getQuestions();
     }
 
     getQuestions();
@@ -72,7 +74,6 @@ export const Forum = () => {
             <Box className='container' sx={{
                 marginTop: 10,
             }}>
-                <ToastContainer/>
                 <Paper
                     elevation={8}
                     sx={{

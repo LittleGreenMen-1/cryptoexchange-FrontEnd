@@ -18,9 +18,6 @@ const Navbar = () => {
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             Crypto Exchange
           </Typography>
-          <Typography variant="subtitle2" className="undertext">
-            by <b>Cognizant</b> Soft<b>vision</b>
-          </Typography>
         </Box>
       </Toolbar>
     </AppBar>

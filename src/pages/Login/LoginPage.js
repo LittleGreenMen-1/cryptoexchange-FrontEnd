@@ -37,22 +37,13 @@ const LoginPage = () => {
             console.log(error);
         })
     }
+
     const handleGithubLogin = () => {
-        axios.get(`${constants.baseURL}/auth/github`, { withCredentials: true })
-            .then((res) => {
-                console.log(res);
-            }).catch((error) => {
-                console.log(error);
-            })
+        window.location.href = `${constants.baseURL}/auth/github`;
     }
 
     const handleGoogleLogin = () => {
-        axios.get(`${constants.baseURL}/auth/google`)
-            .then((res) => {
-                console.log(res);
-            }).catch((error) => {
-                console.log(error);
-            })
+        window.location.href = `${constants.baseURL}/auth/google`;
     }
 
     const LoginSchema = Yup.object({
@@ -103,7 +94,6 @@ const LoginPage = () => {
                     }
                 }}>
                     {error ?
-                        // <Alert severity="error">Login failed</Alert>
                         <Collapse in={!closed}>
                             <Alert severity='error' variant='filled'
                                 action={

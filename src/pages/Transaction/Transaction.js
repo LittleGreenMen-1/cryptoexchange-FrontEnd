@@ -8,12 +8,12 @@ const columnsTransaction = [
     {
         field: 'sold',
         headerName: 'Sold',
-        width: 180,
+        width: 300,
     },
     {
         field: 'bought',
         headerName: 'Bought',
-        width: 150,
+        width: 300,
     },
     {
         field: 'cryptoInWallet',

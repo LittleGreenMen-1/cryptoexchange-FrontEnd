@@ -46,7 +46,6 @@ export const Ratio = () => {
                     sx={{
                         display: 'grid',
                         gridTemplateColumns: '1fr 4fr',
-                        // gridTemplateRows: '50px 100px 600px',
                         gridTemplateRows: '0.5fr 1fr 3fr',
                         gridTemplateAreas: `'drawer .'
                                             'drawer select'
@@ -80,7 +79,7 @@ export const Ratio = () => {
                         <Line type="monotone" dataKey="uv" stroke="#8884d8" />
                         <CartesianGrid stroke="#ccc" />
                         <XAxis dataKey="name" interval={30}/>
-                        <YAxis type="number" domain={limits}/>
+                        <YAxis domain={limits}/>
                     </LineChart>
                 </Paper>
             </Box>

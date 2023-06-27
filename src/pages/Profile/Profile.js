@@ -10,7 +10,7 @@ import registerPhoto from '../../utils/img/RegisterPhoto.png'
 import * as Yup from 'yup'
 import { Button } from '@mui/material';
 import axios from 'axios';
-import { toast, ToastContainer } from 'react-toastify'
+import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 const Profile = () => {
@@ -48,7 +48,6 @@ const Profile = () => {
             setConfirmOldPass('')
             setNewPassword('')
             setConfirmNewPass('')
-            console.log(response)
         })
         .catch(error => {
             toast.error(error.response.data.msg)
@@ -73,7 +72,6 @@ const Profile = () => {
             .then(response => {
                 toast.success(response.data.msg)
                 setFile(null)
-                console.log(response)
             })
             .catch(error => {
                 toast.error(error.response.data.msg)
@@ -100,7 +98,6 @@ const Profile = () => {
             <Box className='container' sx={{
                 marginTop: 10,
             }}>
-                <ToastContainer/>
                 <Paper
                     elevation={8}
                     sx={{

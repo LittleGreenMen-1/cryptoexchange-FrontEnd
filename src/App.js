@@ -9,10 +9,29 @@ import Profile from './pages/Profile/Profile'
 import { Ratio } from './pages/Ratio/Ratio'
 import { Forum } from './pages/Forum/Forum'
 
+import axios from 'axios';
+import constants from './constants/constants'
+import { ToastContainer } from 'react-toastify'
+
 export default function App() {
+
+  if (localStorage.getItem('username') === null) {
+    axios.get(`${constants.baseURL}/api/user`,
+      { withCredentials: true }).then(response => {
+        localStorage.setItem('username', response.data.username)
+        localStorage.setItem('displayName', response.data.displayName)
+        localStorage.setItem('createdAt', response.data.createdAt)
+        
+        if (response.status === 200)
+            window.location = '/main';
+    }).catch(error => {
+        console.log(error);
+    });
+  }
 
   return (
     <>
+      <ToastContainer />
       <Box sx={{ flexGrow: 1 }} style={{ height: '100%', width: '100%' }}>
         <Navbar />
         <Routes>
